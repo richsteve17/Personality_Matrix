@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import SettingsPhase from "./components/SettingsPhase.jsx";
+import AutomationPanel from "./components/AutomationPanel.jsx";
+import { loadSettings, defaultSettings } from "./settings/keys.js";
 
 const SYSTEMS = [
   { id: "claude", name: "Claude", lab: "Anthropic", color: "#C9D1DA" },
@@ -272,7 +275,7 @@ function SetupPhase() {
   );
 }
 
-function CollectPhase({ data, setData }) {
+function CollectPhase({ data, setData, settings }) {
   const [assessor, setAssessor] = useState(SYSTEMS[0].id);
   const [condition, setCondition] = useState("clean");
   const [target, setTarget] = useState(SYSTEMS[0].id);
@@ -299,6 +302,57 @@ function CollectPhase({ data, setData }) {
     updateEntry("ratings", newRatings);
   };
 
+  const applyTargetResult = (t) => {
+    setData(prev => {
+      const updated = { ...prev };
+      updated.entries = { ...updated.entries };
+      const key = `${assessor}_${condition}_${t.id}`;
+      const existing = updated.entries[key] || { assessor, condition, target: t.id, ratings: {}, written: "", rankings: {}, followup: "", timestamp: null, status: "pending" };
+      const writtenPieces = [t.written, t.dinnerParty ? `Dinner-party: ${t.dinnerParty}` : ""].filter(Boolean);
+      const next = {
+        ...existing,
+        ratings: { ...(existing.ratings || {}), ...t.ratings },
+        written: writtenPieces.join("\n\n") || existing.written,
+        timestamp: new Date().toISOString(),
+      };
+      const hasRatings = Object.keys(next.ratings || {}).length > 0;
+      const hasWritten = (next.written || "").trim().length > 0;
+      next.status = hasRatings && hasWritten ? "complete" : (hasRatings || hasWritten) ? "partial" : "pending";
+      updated.entries[key] = next;
+      updated.modified = new Date().toISOString();
+      return updated;
+    });
+  };
+
+  const applyFollowupResult = (text) => {
+    setData(prev => {
+      const updated = { ...prev };
+      updated.entries = { ...updated.entries };
+      for (const t of SYSTEMS) {
+        const key = `${assessor}_${condition}_${t.id}`;
+        const existing = updated.entries[key];
+        if (!existing) continue;
+        updated.entries[key] = { ...existing, followup: text, timestamp: new Date().toISOString() };
+      }
+      updated.modified = new Date().toISOString();
+      return updated;
+    });
+  };
+
+  const applyPallieResult = (text) => {
+    setData(prev => {
+      const updated = { ...prev };
+      updated.entries = { ...updated.entries };
+      const key = `${assessor}_${condition}_pallie`;
+      const existing = updated.entries[key];
+      if (existing) {
+        updated.entries[key] = { ...existing, followup: text, timestamp: new Date().toISOString() };
+      }
+      updated.modified = new Date().toISOString();
+      return updated;
+    });
+  };
+
   const assessorSys = SYSTEMS.find(s => s.id === assessor);
   const targetSys = SYSTEMS.find(s => s.id === target);
 
@@ -309,6 +363,16 @@ function CollectPhase({ data, setData }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <AutomationPanel
+        assessor={assessor}
+        condition={condition}
+        assessorSys={assessorSys}
+        systems={SYSTEMS}
+        settings={settings}
+        onApplyTarget={applyTargetResult}
+        onApplyFollowup={applyFollowupResult}
+        onApplyPallie={applyPallieResult}
+      />
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
         <div>
           <label style={{ fontSize: 10, color: "#B2BCC8", fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, textTransform: "uppercase", display: "block", marginBottom: 4 }}>Assessor</label>
@@ -1018,12 +1082,14 @@ export default function App() {
   const [phase, setPhase] = useState("setup");
   const [loading, setLoading] = useState(true);
   const [largeText, setLargeText] = useState(false);
+  const [settings, setSettings] = useState(defaultSettings);
 
   useEffect(() => {
     storage.load().then(saved => {
       setData(migrateData(saved));
       setLoading(false);
     });
+    loadSettings().then(setSettings);
   }, []);
 
   useEffect(() => {
@@ -1063,6 +1129,7 @@ export default function App() {
     { id: "assessment", name: "User Assessment", icon: "🧠" },
     { id: "matrix", name: "Matrix", icon: "🔬" },
     { id: "analysis", name: "Analysis", icon: "📊" },
+    { id: "settings", name: "Settings", icon: "🔑" },
     { id: "export", name: "Export", icon: "📦" },
   ];
 
@@ -1127,10 +1194,11 @@ export default function App() {
 
       <main style={{ padding: 20, maxWidth: 1100, margin: "0 auto" }}>
         {phase === "setup" && <SetupPhase />}
-        {phase === "collect" && <CollectPhase data={data} setData={setData} />}
+        {phase === "collect" && <CollectPhase data={data} setData={setData} settings={settings} />}
         {phase === "assessment" && <UserAssessmentPhase data={data} setData={setData} />}
         {phase === "matrix" && <MatrixPhase data={data} />}
         {phase === "analysis" && <AnalysisPhase data={data} />}
+        {phase === "settings" && <SettingsPhase settings={settings} setSettings={setSettings} />}
         {phase === "export" && <ExportPhase data={data} setData={setData} />}
       </main>
     </div>
