@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PROVIDER_META, runChat } from "../providers/index.js";
 import { saveSettings, clearSettings, defaultSettings } from "../settings/keys.js";
+import { useIsNarrow } from "../hooks/useIsNarrow.js";
 
 const PANEL = "#283241";
 const PANEL_ALT = "#323e4f";
@@ -24,6 +25,7 @@ const fieldStyle = {
 };
 
 export default function SettingsPhase({ settings, setSettings }) {
+  const isNarrow = useIsNarrow();
   const [saveState, setSaveState] = useState(null);
   const [tests, setTests] = useState({});
 
@@ -102,7 +104,7 @@ export default function SettingsPhase({ settings, setSettings }) {
               </button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isNarrow ? "1fr" : "1fr 1fr", gap: 10 }}>
               <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 <span style={{ fontSize: 10, color: MUTED, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 1, textTransform: "uppercase" }}>API Key</span>
                 <input

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import SettingsPhase from "./components/SettingsPhase.jsx";
 import AutomationPanel from "./components/AutomationPanel.jsx";
 import { loadSettings, defaultSettings } from "./settings/keys.js";
+import { useIsNarrow } from "./hooks/useIsNarrow.js";
 
 const SYSTEMS = [
   { id: "claude", name: "Claude", lab: "Anthropic", color: "#C9D1DA" },
@@ -276,6 +277,7 @@ function SetupPhase() {
 }
 
 function CollectPhase({ data, setData, settings }) {
+  const isNarrow = useIsNarrow();
   const [assessor, setAssessor] = useState(SYSTEMS[0].id);
   const [condition, setCondition] = useState("clean");
   const [target, setTarget] = useState(SYSTEMS[0].id);
@@ -449,12 +451,12 @@ function CollectPhase({ data, setData, settings }) {
           {assessor === target && <span style={{ color: "#C9D1DA", marginLeft: 8 }}>★ SELF-ASSESSMENT</span>}
         </h4>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isNarrow ? "1fr" : "1fr 1fr", gap: 8 }}>
           {DIMENSIONS.map(dim => (
             <div key={dim} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 12, color: "#B6C0CB", minWidth: 160, fontFamily: "'IBM Plex Mono', monospace" }}>{dim}</label>
+              <label style={{ fontSize: 12, color: "#B6C0CB", minWidth: isNarrow ? 0 : 160, flex: isNarrow ? 1 : "none", fontFamily: "'IBM Plex Mono', monospace" }}>{dim}</label>
               <input
-                type="number" min="1" max="10"
+                type="number" min="1" max="10" inputMode="numeric"
                 value={entry.ratings?.[dim] || ""}
                 onChange={e => updateRating(dim, e.target.value ? Number(e.target.value) : "")}
                 placeholder="1-10"
@@ -506,6 +508,7 @@ function CollectPhase({ data, setData, settings }) {
 }
 
 function UserAssessmentPhase({ data, setData }) {
+  const isNarrow = useIsNarrow();
   const [condition, setCondition] = useState("clean");
   const [target, setTarget] = useState(SYSTEMS[0].id);
   const entryKey = `${condition}_${target}`;
@@ -614,14 +617,15 @@ function UserAssessmentPhase({ data, setData }) {
           <span style={{ color: THEME.subtle }}> ({condition})</span>
         </h4>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isNarrow ? "1fr" : "1fr 1fr", gap: 8 }}>
           {DIMENSIONS.map((dim) => (
             <div key={dim} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label style={{ fontSize: 12, color: "#B6C0CB", minWidth: 160, fontFamily: "'IBM Plex Mono', monospace" }}>{dim}</label>
+              <label style={{ fontSize: 12, color: "#B6C0CB", minWidth: isNarrow ? 0 : 160, flex: isNarrow ? 1 : "none", fontFamily: "'IBM Plex Mono', monospace" }}>{dim}</label>
               <input
                 type="number"
                 min="1"
                 max="10"
+                inputMode="numeric"
                 value={entry.ratings?.[dim] || ""}
                 onChange={(e) => updateRating(dim, e.target.value ? Number(e.target.value) : "")}
                 placeholder="1-10"
@@ -894,6 +898,7 @@ function AnalysisPhase({ data }) {
 }
 
 function ExportPhase({ data, setData }) {
+  const isNarrow = useIsNarrow();
   const [exportStatus, setExportStatus] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -1023,7 +1028,7 @@ function ExportPhase({ data, setData }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isNarrow ? "1fr" : "1fr 1fr", gap: 12 }}>
         <button onClick={exportJSON} style={{
           background: exportStatus === "json" ? "#232c37" : "#283241",
           border: `1px solid ${exportStatus === "json" ? "#7E8794" : "#5a6a80"}`,
@@ -1078,6 +1083,7 @@ function ExportPhase({ data, setData }) {
 }
 
 export default function App() {
+  const isNarrow = useIsNarrow();
   const [data, setData] = useState(null);
   const [phase, setPhase] = useState("setup");
   const [loading, setLoading] = useState(true);
@@ -1121,7 +1127,7 @@ export default function App() {
 
   const completed = Object.values(data.entries).filter(e => e.status === "complete").length;
   const total = Object.keys(data.entries).length;
-  const uiZoom = largeText ? 1.14 : 1;
+  const uiZoom = isNarrow ? 1 : (largeText ? 1.14 : 1);
 
   const TABS = [
     { id: "setup", name: "Setup", icon: "⚙️" },
@@ -1144,7 +1150,7 @@ export default function App() {
     }}>
       <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 
-      <header style={{ borderBottom: "1px solid #4a596d", padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header style={{ borderBottom: "1px solid #4a596d", padding: isNarrow ? "10px 14px" : "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, paddingTop: `calc(${isNarrow ? 10 : 14}px + env(safe-area-inset-top, 0px))` }}>
         <div>
           <h1 style={{ fontSize: 15, fontWeight: 700, color: "#C9D1DA", margin: 0, fontFamily: "'IBM Plex Mono', monospace", letterSpacing: 3, textTransform: "uppercase" }}>
             AI Personality Matrix
@@ -1192,7 +1198,7 @@ export default function App() {
         ))}
       </nav>
 
-      <main style={{ padding: 20, maxWidth: 1100, margin: "0 auto" }}>
+      <main style={{ padding: isNarrow ? 12 : 20, maxWidth: 1100, margin: "0 auto" }}>
         {phase === "setup" && <SetupPhase />}
         {phase === "collect" && <CollectPhase data={data} setData={setData} settings={settings} />}
         {phase === "assessment" && <UserAssessmentPhase data={data} setData={setData} />}

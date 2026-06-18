@@ -30,6 +30,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: linear-gradient(180deg, #1f2228 0%, #1a1d23 100%);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  overscroll-behavior-y: contain;
+  -webkit-text-size-adjust: 100%;
 }
 
 #root {
@@ -39,4 +44,17 @@ body {
 button {
   font-family: inherit;
   color: inherit;
+  touch-action: manipulation;
+}
+
+/* Prevent iOS Safari from auto-zooming into form fields when they're focused.
+   Fields must render at >=16px on phones to suppress the zoom. */
+@media (max-width: 640px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  /* Roomier tap targets */
+  button {
+    min-height: 36px;
+  }
 }
