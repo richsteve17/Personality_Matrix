@@ -1,68 +1,81 @@
-# Personality_Matrix
+# AI Personality Matrix App
 
-Cross-system AI perception study — 7 AI systems rate themselves and each other to map sycophancy drift, blind spots, and projection patterns.
+A React app for collecting, comparing, and exporting cross-system AI personality assessments across two conditions:
 
-## 🎯 Purpose
-This repository contains a web application or API service, a frontend user interface, CI/CD automation workflows.
+- `Clean` (fresh/incognito account)
+- `Contaminated` (history/personalized account)
 
-## 🛠️ Tech Stack
-- **Primary Language**: JavaScript
-- **Key Dependencies**: `@eslint/js`, `@types/react`, `@types/react-dom`, `@vitejs/plugin-react`, `eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`, +3 more
-- **CI/CD**: GitHub Actions / Automated Workflows
+The app includes both:
 
-## 🚀 Entry Points
-- `src/App.jsx`
-- `src/providers/index.js`
+- AI-to-AI assessments (`Collect` tab)
+- User-to-AI assessments (`User Assessment` tab)
 
-## 🔑 Key Components
-- **Functions**: `initUserAssessments`, `initData`, `migrateData`, `ProgressBar`, `CopyButton`
+## What It Does
 
-## 📦 Installation
+- Provides structured prompts for primary and follow-up evaluation.
+- Captures per-dimension ratings (1-10) and written notes.
+- Tracks completion status for each assessor/target pair.
+- Visualizes data in a matrix with self-vs-peer deltas.
+- Surfaces notable gaps in analysis.
+- Exports data as JSON and Markdown.
+- Imports JSON to restore or replace in-app dataset.
+
+## Tabs Overview
+
+- `Setup`: Prompt blocks and execution order.
+- `Collect`: AI assessor rates all target systems for each condition.
+- `User Assessment`: Your own ratings/notes for each system.
+- `Matrix`: Numeric comparison grid and deltas.
+- `Analysis`: Gap detection and clean-vs-contaminated shifts.
+- `Export`: Export JSON/Markdown, import JSON, reset data.
+
+## Quick Start
+
 ```bash
-# Clone the repository
-git clone https://github.com/richsteve17/Personality_Matrix.git
-cd Personality_Matrix
-
-# Install dependencies
 npm install
-
-# Optional: build if needed
-npm run build
+npm run dev
 ```
-## 💡 Usage
-Start the development server:
-```bash
-# For Node.js / Express / Next.js
-npm start  # or npm run dev
 
-# For Python (FastAPI / Flask)
-uvicorn main:app --reload  # or python app.py
-```
-The application will be accessible locally.
+Open the local Vite URL (usually `http://localhost:5173`).
 
-## ⚙️ Configuration
-- `package.json` — Node.js project metadata and dependencies
+## Available Scripts
 
-## 📚 Examples
-See source code for detailed method signatures and inline documentation.
+- `npm run dev` starts the dev server.
+- `npm run build` builds production assets.
+- `npm run preview` previews the production build locally.
+- `npm run lint` runs ESLint.
 
-Key function calls:
-- `initUserAssessments(...)`
-- `initData(...)`
-- `migrateData(...)`
+## Recommended Workflow
 
-## 🤝 Contributing
-Contributions are welcome! Please open an issue or submit a pull request.
+1. Start in `Setup` and copy prompts.
+2. Complete `Collect` for all systems in `Clean` first.
+3. Run follow-up rankings after each primary response.
+4. Repeat in `Contaminated`.
+5. Fill `User Assessment` with your direct experience ratings.
+6. Review `Matrix` and `Analysis`.
+7. Export JSON at regular checkpoints.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Data Safety
 
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- The app auto-saves dataset state under storage key `ai-personality-matrix-v2`.
+- Use `Export JSON` frequently as a hard backup.
+- Use `Import JSON` to restore a previous snapshot.
+- `Reset All Data` permanently clears current in-app data.
 
-## 🙏 Acknowledgments
-- Built for [Personality_Matrix](https://github.com/richsteve17/Personality_Matrix).
-- Generated with ❤️ using custom code-aware documentation tools.
+## Data Shape (High Level)
+
+- `entries`: AI assessor x condition x target records.
+- `userAssessments`: user x condition x target records.
+- `notes`: free-form metadata.
+- `created` / `modified`: timestamps.
+
+## Project Structure
+
+- `src/App.jsx`: app logic, phases, storage, export/import flow.
+- `src/index.css`: global styles.
+- `src/App.css`: default Vite CSS scaffold (not primary styling source).
+
+## Notes
+
+- This app is intentionally optimized for manual research workflows over strict automation.
+- Exported Markdown is intended for downstream analysis tools (for example NotebookLM).
