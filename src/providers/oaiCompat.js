@@ -1,7 +1,7 @@
 import { ProviderError, readErrorBody } from "./errors.js";
 
 export async function runOaiCompat(providerId, defaultBase, { messages, apiKey, model, endpointOverride, signal, headers: extraHeaders }) {
-  if (!apiKey && providerId !== "pallie") {
+  if (!apiKey) {
     throw new ProviderError(providerId, 401, "Missing API key");
   }
   const base = (endpointOverride || defaultBase).replace(/\/+$/, "");
