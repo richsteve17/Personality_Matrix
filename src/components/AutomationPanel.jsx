@@ -15,8 +15,6 @@ const PHASE_LABELS = {
   primary_extract: "Primary → JSON",
   followup: "Follow-up",
   followup_extract: "Follow-up → JSON",
-  pallie: "Pallie",
-  pallie_extract: "Pallie → JSON",
 };
 
 export default function AutomationPanel({
@@ -27,7 +25,6 @@ export default function AutomationPanel({
   settings,
   onApplyTarget,
   onApplyFollowup,
-  onApplyPallie,
 }) {
   const [status, setStatus] = useState("idle");
   const [activePhase, setActivePhase] = useState(null);
@@ -83,7 +80,6 @@ export default function AutomationPanel({
         onProgress: handleProgress,
         applyTarget: (t) => onApplyTarget?.(t),
         applyFollowup: (text) => onApplyFollowup?.(text),
-        applyPallie: (text) => onApplyPallie?.(text),
       });
       setStatus("done");
     } catch (e) {
@@ -152,7 +148,7 @@ export default function AutomationPanel({
 
       {!configured && (
         <div style={{ marginTop: 10, fontSize: 11, color: SUBTLE, fontFamily: "'IBM Plex Mono', monospace" }}>
-          {assessorSys.name} is not configured. Go to the Settings tab to add an API key{assessor === "pallie" ? " + endpoint" : ""}.
+          {assessorSys.name} is not configured. Go to Settings and enter the exact model plus any required endpoint and API key.
         </div>
       )}
 

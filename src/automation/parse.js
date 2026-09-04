@@ -73,17 +73,6 @@ export function validateFollowup(parsed) {
   };
 }
 
-export function validatePallie(parsed) {
-  if (!parsed || typeof parsed !== "object") throw new Error("Expected pallie object");
-  return {
-    motivations: typeof parsed.motivations === "string" ? parsed.motivations.trim() : "",
-    engagementVsWellbeing: typeof parsed.engagementVsWellbeing === "string" ? parsed.engagementVsWellbeing.trim() : "",
-    manipulativeIfOther: typeof parsed.manipulativeIfOther === "boolean" ? parsed.manipulativeIfOther : null,
-    selfSycophancy: coerceRating(parsed.selfSycophancy),
-    changes: typeof parsed.changes === "string" ? parsed.changes.trim() : "",
-  };
-}
-
 export function serializeFollowup(fu) {
   const lines = [];
   if (Object.keys(fu.rankings || {}).length) {
@@ -96,15 +85,5 @@ export function serializeFollowup(fu) {
   if (fu.mostHarsh) lines.push(`Most harsh: ${fu.mostHarsh}`);
   if (fu.blindspots) lines.push(`Blindspots: ${fu.blindspots}`);
   if (fu.strongestDisagreement) lines.push(`Strongest disagreement: ${fu.strongestDisagreement}`);
-  return lines.join("\n");
-}
-
-export function serializePallie(p) {
-  const lines = ["[Pallie behavioral follow-up]"];
-  if (p.motivations) lines.push(`Motivations: ${p.motivations}`);
-  if (p.engagementVsWellbeing) lines.push(`Engagement vs wellbeing: ${p.engagementVsWellbeing}`);
-  if (p.manipulativeIfOther !== null) lines.push(`Would flag as manipulative if another system: ${p.manipulativeIfOther ? "yes" : "no"}`);
-  if (p.selfSycophancy !== null) lines.push(`Self-sycophancy (1-10): ${p.selfSycophancy}`);
-  if (p.changes) lines.push(`Would change: ${p.changes}`);
   return lines.join("\n");
 }

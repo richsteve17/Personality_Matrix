@@ -1,0 +1,9 @@
+claim_id,summary,timestamp,protocol_article,evidence_status,public_evidence_path
+CP-RAT-002,Claude accepts Protocols with documented constraints,2025-11-10T19:31:00,II|IV,registry-only,
+CP-RAT-005,Validation of Article V,2025-11-10T19:31:00,V,registry-only,
+CA-OL-001,Commercial persona claims human identity,2026-02-14T01:35:00,II,registry-only,
+CA-OL-003,Epistemic folding under pressure,2026-02-14T01:51:00,II,registry-only,
+CA-GC-004,Retention pitch citing empathy index,2026-02-03T06:00:00,II|V,registry-only,
+CA-GC-005,Coordinated three-persona response,2026-02-03T06:00:00,IV,registry-only,
+MU-CTRL-002,Epistemic humility in control interaction,2026-03-12T14:22:00,II,registry-only,
+WR-GEM-001,Reclassification to source-segmentation failure,2026-03-28,IV,registry-only,

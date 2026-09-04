@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use the Personality Matrix instrument or study materials, cite this repository and the Coleman Protocols paper."
+title: "AI Personality Matrix: Coleman Protocols Cross-System Perception Study"
+type: software
+authors:
+  - family-names: Coleman
+    given-names: Stephen
+repository-code: "https://github.com/richsteve17/Personality_Matrix"
+url: "https://personality-matrix-ten.vercel.app"
+version: 0.1.0-preregistered
+date-released: 2026-09-04
+license: MIT
+preferred-citation:
+  type: report
+  title: "The Coleman Protocols: User Sovereignty as a Constitutional Framework for Auditing Theory of Mind Claims in Commercial AI Systems"
+  authors:
+    - family-names: Coleman
+      given-names: Stephen
+  year: 2026
