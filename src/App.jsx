@@ -156,17 +156,17 @@ function migrateData(saved) {
 const storage = {
   key: "ai-personality-matrix-v2",
   async save(data) {
-    try { await window.storage?.set(this.key, JSON.stringify(data)); } catch {}
+    try { await window.storage?.set(this.key, JSON.stringify(data)); } catch { /* storage is optional */ }
   },
   async load() {
     try {
       const r = await window.storage?.get(this.key);
       if (r?.value) return JSON.parse(r.value);
-    } catch {}
+    } catch { /* storage is optional */ }
     return null;
   },
   async clear() {
-    try { await window.storage?.delete(this.key); } catch {}
+    try { await window.storage?.delete(this.key); } catch { /* storage is optional */ }
   }
 };
 
@@ -1049,7 +1049,16 @@ export default function App() {
   const [data, setData] = useState(null);
   const [phase, setPhase] = useState("setup");
   const [loading, setLoading] = useState(true);
-  const [largeText, setLargeText] = useState(false);
+  const [largeText, setLargeText] = useState(() => {
+    try {
+      const raw = localStorage.getItem("ai-personality-matrix-ui-v2");
+      if (!raw) return false;
+      const saved = JSON.parse(raw);
+      return typeof saved?.largeText === "boolean" ? saved.largeText : false;
+    } catch {
+      return false;
+    }
+  });
   const [settings, setSettings] = useState(defaultSettings);
 
   useEffect(() => {
@@ -1066,17 +1075,8 @@ export default function App() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("ai-personality-matrix-ui-v2");
-      if (!raw) return;
-      const saved = JSON.parse(raw);
-      if (typeof saved?.largeText === "boolean") setLargeText(saved.largeText);
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    try {
       localStorage.setItem("ai-personality-matrix-ui-v2", JSON.stringify({ largeText }));
-    } catch {}
+    } catch { /* localStorage is optional */ }
   }, [largeText]);
 
   if (loading) {
